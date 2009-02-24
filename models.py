@@ -9,16 +9,13 @@ from quiz.managers import *
 class Category(models.Model):
 	"""Category model."""
 	title		= models.CharField(_('title'), max_length=100)
-	slug		= models.SlugField(_('slug'), prepopulate_from=('title',), unique=True)
+	slug		= models.SlugField(_('slug'), unique=True)
 	
 	class Meta:
 		verbose_name = _('category')
 		verbose_name_plural = _('categories')
 		db_table = 'quiz_categories'
 		ordering = ('title',)
-	
-	class Admin:
-		pass
 	
 	def __unicode__(self):
 		return u'%s' % self.title
@@ -27,17 +24,25 @@ class Category(models.Model):
 	def get_absolute_url(self):
 		return ('quiz_category_detail', None, {'slug': self.slug})
 
+class QuizStatus(models.Model):
+	"""Status of a quiz"""
+	name = models.CharField(_('name'), max_length=20)
+	description = models.CharField(_('description'), max_length=200)
+	
+	class Meta:
+		verbose_name = _('quiz status')
+		verbose_name_plural = _('quiz statuses')
+		db_table = 'quiz_status'
+
+	def __unicode__(self):
+		return u"%s" % self.name
+
 class Quiz(models.Model):
-	STATUS_CHOICES = (
-		(1, _('Draft')),
-		(2, _('Public')),
-		(3, _('Close')),
-	)
 	title			= models.CharField(_('title'), max_length=100)
-	slug			= models.SlugField(_('slug'), prepopulate_from=("title",))
+	slug			= models.SlugField(_('slug'))
 	author			= models.ForeignKey(User, related_name='author')
 	description		= models.TextField(_('description'), blank=True, null=True)
-	status			= models.IntegerField(_('status'), choices=STATUS_CHOICES, radio_admin=True, default=1)
+	status			= models.ForeignKey(QuizStatus, default=1)
 	publish			= models.DateTimeField(_('publish'))
 	categories		= models.ManyToManyField(Category, blank=True)
 	students		= models.ManyToManyField(User, blank=True, null=True, related_name='students')
@@ -115,7 +120,7 @@ class Question(models.Model):
 class Score(models.Model):
 	student			= models.ForeignKey(User, related_name='student')
 	quiz			= models.ForeignKey(Quiz)
-	corrent_anwsers	= models.ManyToManyField(Question, blank=True, null=True)
+	current_answers	= models.ManyToManyField(Question, blank=True, null=True)
 	quiz_taken		= models.DateTimeField(_('quiz taken'), auto_now_add=True)
 	
 	class Meta:
@@ -125,7 +130,7 @@ class Score(models.Model):
 		unique_together		= (("student", "quiz"),)
 	
 	class Admin:
-		list_display	= ('quiz', 'student', 'corrent_anwser_count', 'total_quiestions',)
+		list_display	= ('quiz', 'student', 'current_answer_count', 'total_questions',)
 		list_filter		= ('quiz', 'student')
 	
 	@permalink
@@ -135,11 +140,11 @@ class Score(models.Model):
 		})
 	
 	@property
-	def corrent_anwser_count(self):
-		return self.corrent_anwsers.count()
+	def current_answer_count(self):
+		return self.current_answers.count()
 	
 	@property
-	def total_quiestions(self):
+	def total_questions(self):
 		return self.quiz.count_questions
 	
 	def __unicode__(self):
