@@ -4,8 +4,6 @@ from django.db.models import permalink
 from django.contrib.auth.models import User
 from django.template.defaultfilters import truncatewords_html
 
-from quiz.managers import *
-
 class Category(models.Model):
 	"""Category model."""
 	title		= models.CharField(_('title'), max_length=100)
