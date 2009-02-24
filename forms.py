@@ -20,7 +20,7 @@ class QuestionForm(forms.Form):
 		if not self.is_valid():
 			return False
 		
-		return self.cleaned_data['answers'] == str(self.correct)
+		return self.cleaned_data['answers'] == str(self.question.correct)
 
 def quiz_forms(quiz, data=None):
 	questions = Question.objects.filter(quiz=quiz).order_by('id')

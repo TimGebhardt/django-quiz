@@ -18,8 +18,7 @@ def quiz_detail(request, slug):
 	try:
 		score = quiz.score_set.get(student=request.user, quiz=quiz)
 		questions = quiz.question_set.all()
-		corrent_anwser = score.corrent_anwsers
-		return render_to_response('quiz/quiz_score.html', { 'quiz': quiz, 'score': score, 'questions': questions, 'corrent_anwser': corrent_anwser })
+		return render_to_response('quiz/quiz_score.html', { 'quiz': quiz, 'score': score, 'questions': questions })
 	except Score.DoesNotExist:
 		form_list = quiz_forms(quiz)
 		return render_to_response('quiz/quiz_detail.html', { 'form_list': form_list, 'quiz': quiz }, context_instance=RequestContext(request))

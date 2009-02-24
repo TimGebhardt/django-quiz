@@ -10,10 +10,10 @@
 {% block content %}
 	<ul class="question_list">
 		{% for question in questions %}
-			{% if score.corrent_anwsers|intequaltest:question %}
+			{% if score.current_answers|intequaltest:question %}
 				This wont work
 			{% endif %}
-			<li class="{% ifequal score.corrent_anwsers.question question %}correct{% endifequal %}">{{ question.question }}
+			<li class="{% ifequal score.current_answers.question question %}correct{% endifequal %}">{{ question.question }}
 				<ul>
 					{% for answer in question.answers.all %}
 						<li class="{% ifequal question.correct_answer answer %}correct{% endifequal %}">{{ answer.answer }}</li>
